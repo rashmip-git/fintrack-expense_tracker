@@ -1,10 +1,11 @@
-import React,{useEffect,useState} from 'react'
+import React,{useEffect,useState,useContext} from 'react'
 import "./Dashboard.css"
+import { ExpenseContext } from '../../Context/ExpenseContext';
 import {PieChart,Pie,Cell,Tooltip,
         LineChart,Line,XAxis,YAxis,CartesianGrid,ResponsiveContainer} from "recharts"; 
 //PieChart → chart container ..Pie → actual pie slices..Cell → color for each slice..Tooltip → hover box
 
-const COLORS = ["#77c2f1ff","#18142bff","#6b56d3ff", "#44bb40ff", "#fd7ca9ff", "#036774ff", "#e8e41bff", "#FB8C00"];
+const COLORS = ["#77c2f1ff","#fd7ca9ff","#44bb40ff","#e8e41bff","#18142bff","#6b56d3ff",   "#036774ff",  "#FB8C00"];
 const monthNames = [
   "Jan","Feb","Mar","Apr","May","Jun",
   "Jul","Aug","Sep","Oct","Nov","Dec"
@@ -57,6 +58,7 @@ const Dashboard = () => {
     const [categoryData, setCategoryData] = useState([]);
   const [paymentData, setPaymentData] = useState([]);
   const [trendData,setTrendData] = useState([]);
+  const {refresh} = useContext(ExpenseContext);
 
   useEffect(()=>{
     const fetchSummary = async()=>{
@@ -70,18 +72,12 @@ const Dashboard = () => {
         })
         const data = await res.json();
         setTotalExpenses(data.totalExpenses);
-
-
-
         setCategoryData(
           data.categoryWise.map(item => ({
             name: item._id,
             value: item.total
           }))
         );
-
-
-
         setPaymentData(
           data.paymentWise.map(item => ({
             name: item._id,
@@ -111,8 +107,7 @@ const Dashboard = () => {
       }
     }
     fetchSummary();
-
-  },[]);
+  },[refresh]);
 
   const totalCategoryValue = categoryData.reduce(
     (sum,item)=> sum+item.value,0
@@ -141,13 +136,6 @@ const Dashboard = () => {
       </div>
 
     </div>
-
-
-
-
-
-
-
     {/*PIE CHARTS*/}
     <div className="pie">
       <div className="pie1"><p className='line'>Category-wise Expenses</p>
@@ -182,7 +170,6 @@ const Dashboard = () => {
 
   return (
     <div key={index} className="calc-item">
-
       <span className='clrbox'
         style={{
           backgroundColor:COLORS[index%COLORS.length]
@@ -243,20 +230,11 @@ const Dashboard = () => {
     </div>
   );
 })}
-
       </div>
       </div>
       </div>
-
-
     </div>
    
-
-
-
-
-
-
 {/*graphs*/}
 <div
         style={{
